@@ -2,19 +2,25 @@
 #include <string.h>
 #include "romancalc.h"
 
-//Defining a new type for a lookup table of roman numeral and integer values
+//Lookup table of roman numeral and integer values
 typedef struct {char key; int val;} digits;
+//Lookup table for converting between subtractive representations and additive representaions
 typedef struct {char *sub; char *add;} sub_to_add_map;
+//Lokup table for combinations that break the rules of repeating numerals
 typedef struct {char *bad; char* good;} sum_map;
-//Static lookup table of values  
+
+//Static lookup tables
 static digits d[]={{'M',1000},{'D',500},{'C',100},{'L',50},{'X',10},{'V',5},{'I',1}};
 static sub_to_add_map stam[]={{"CM","DCCCC"},{"CD","CCCC"},{"XC","LXXXX"},{"XL","XXXX"},{"IX","VIIII"},{"IV","IIII"}};
 static sum_map sm[]={{"IIIII","V"},{"VV","X"},{"XXXX","L"},{"LL","C"},{"CCCCC","D"},{"DD","M"}};
-//Let the preprocessor determine number of keys in static table
 
+//Let the preprocessor determine number of keys in static table
 #define DKEYS (sizeof(d)/sizeof(digits))
 #define MKEYS (sizeof(stam)/sizeof(sub_to_add_map))
 #define SKEYS (sizeof(sm)/sizeof(sum_map))
+
+//TODO Move this to another file. I did not write this function.
+//It is a common enough process to pull form internet. Could probably be optimized
 char *str_replace(char *orig, char *rep, char *with) {
   char *result; // the return string
   char *ins;    // the next insert point
@@ -60,11 +66,13 @@ char *str_replace(char *orig, char *rep, char *with) {
 }
 
 //Return the integer value of a fundamental roman numeral
+//This is used for comparing the values a numeral represents
 int convert_from_roman(char roman)
 {
   int i;
   for (i=0; i < DKEYS; i++)
     {
+      //Get a pointer to the ith entry in the digits map
       digits *sym = &d[i];
       if (sym->key == roman)
 	{
@@ -76,7 +84,7 @@ int convert_from_roman(char roman)
 }
 
 
-
+//Convert numeral to integer value and compare, right now return value is based on descending order
 int compare(const void * rom1, const void * rom2)
 {
   int val1;
@@ -87,26 +95,32 @@ int compare(const void * rom1, const void * rom2)
 
 }
 
+char* expand(char *roman)
+{
+  int i;
+  char *resp;
+  resp = malloc(255 * sizeof(roman));
+  strcpy(resp,roman);
 
+  for (i = MKEYS-1; i >= 0; i--)
+    {
+      sub_to_add_map *sym = &stam[i];      
+      resp = str_replace(resp,sym->sub,sym->add);
+    }
+  return resp;
+}
+
+//Add two roman numeral numbers
 char* add(char *rom1, char *rom2)
 {
   int i;
   char *resp;
   char *resp2;
-  resp = malloc(255 * sizeof(rom1));
-  resp2 = malloc(255 * sizeof(rom2));
-  strcpy(resp, rom1);
-  strcpy(resp2, rom2);
-  
 
-  for (i = MKEYS-1; i >= 0; i--)
-    {
-      sub_to_add_map *sym = &stam[i];
-      
-      resp = str_replace(resp,sym->sub,sym->add);
-      resp2 = str_replace(resp2,sym->sub,sym->add);
-    }
+  resp = expand(rom1);
+  resp2 = expand(rom2);
   strcat(resp, resp2);
+  free(resp2);
   qsort(resp,strlen(resp),1,compare);
   for (i = 0; i < SKEYS; i++)
     {
@@ -121,7 +135,37 @@ char* add(char *rom1, char *rom2)
     }
   
   return resp;
-  //return "\0";
 }
 
 
+char* subtract(char *rom1, char *rom2)
+{
+  int i;
+  char *resp;
+  char *tmp;
+
+  resp = expand(rom1);
+  tmp = expand(rom2);
+  
+  for (i = 0; i < strlen(resp); i++)
+    {
+      for (int j = 0; j < strlen(tmp); j++)
+	{
+	  if (resp[i] == tmp[j])
+	    {
+	      remove_char(resp, resp[i]);
+	      remove_char(tmp, resp[i]);
+	    }
+	}
+    }
+  return resp;
+}
+
+void remove_char(char *str, char remove) {
+  char *src, *dst;
+  for (src = dst = str; *src != '\0'; src++) {
+    *dst = *src;
+    if (*dst != remove) dst++;
+  }
+  *dst = '\0';
+}

@@ -1,9 +1,7 @@
 Running suite Romancalc
 check_romancalc.c:7:P:Core:test_convert_from_roman:0: Passed
-check_romancalc.c:14:P:Additional:test_convert_to_roman:0: Passed
-check_romancalc.c:18:E:Additional:test_romancalc_compare:0: (after this point) Received signal 11 (Segmentation fault: 11)
-check_romancalc.c:28:P:Additional:test_expand:0: Passed
-check_romancalc.c:34:F:Additional:test_add:0: Assertion 'add("IV","X") == "XIIII"' failed: add("IV","X") == "IIIIX", "XIIII" == "XIIII"
-check_romancalc.c:43:P:Additional:test_str_replace:0: Passed
+check_romancalc.c:19:P:Additional:test_romancalc_compare:0: Passed
+check_romancalc.c:28:P:Additional:test_add:0: Passed
+check_romancalc.c:38:P:Additional:test_str_replace:0: Passed
 Results for all suites run:
-66%: Checks: 6, Failures: 1, Errors: 1
+100%: Checks: 4, Failures: 0, Errors: 0
