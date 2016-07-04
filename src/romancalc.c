@@ -3,19 +3,18 @@
 #include "romancalc.h"
 
 //Defining a new type for a lookup table of roman numeral and integer values
-typedef struct {char *key; int val;} roman_table;
 typedef struct {char key; int val;} digits;
 typedef struct {char *sub; char *add;} sub_to_add_map;
+typedef struct {char *bad; char* good;} sum_map;
 //Static lookup table of values  
-
 static digits d[]={{'M',1000},{'D',500},{'C',100},{'L',50},{'X',10},{'V',5},{'I',1}};
 static sub_to_add_map stam[]={{"CM","DCCCC"},{"CD","CCCC"},{"XC","LXXXX"},{"XL","XXXX"},{"IX","VIIII"},{"IV","IIII"}};
-
+static sum_map sm[]={{"IIIII","V"},{"VV","X"},{"XXXX","L"},{"LL","C"},{"CCCCC","D"},{"DD","M"}};
 //Let the preprocessor determine number of keys in static table
-#define NKEYS (sizeof(rt)/sizeof(roman_table))
+
 #define DKEYS (sizeof(d)/sizeof(digits))
 #define MKEYS (sizeof(stam)/sizeof(sub_to_add_map))
-
+#define SKEYS (sizeof(sm)/sizeof(sum_map))
 char *str_replace(char *orig, char *rep, char *with) {
   char *result; // the return string
   char *ins;    // the next insert point
@@ -84,26 +83,10 @@ int compare(const void * rom1, const void * rom2)
   int val2;
   val1 = convert_from_roman(*(char*)rom1);
   val2 = convert_from_roman(*(char*)rom2);
-  return (val1<val2)?-1:(val1>val2);
+  return (val1>val2)?-1:(val1<val2);
 
 }
 
-char* expand(char *compressed)
-{
-  int i;
-  for (i=0; i < MKEYS; i++)
-    {
-      sub_to_add_map *sym = &stam[i];
-      if (strcmp(sym->sub,compressed) == 0)
-	{
-	  return sym->add;
-	}
-
-    }
-  return NULL;
-
-
-}
 
 char* add(char *rom1, char *rom2)
 {
@@ -125,25 +108,20 @@ char* add(char *rom1, char *rom2)
     }
   strcat(resp, resp2);
   qsort(resp,strlen(resp),1,compare);
+  for (i = 0; i < SKEYS; i++)
+    {
+      sum_map *sym = &sm[i];
+      resp = str_replace(resp,sym->bad,sym->good);
+
+    }
+  for (i = 0; i < MKEYS; i++)
+    {
+      sub_to_add_map *sym = &stam[i];
+      resp = str_replace(resp,sym->add,sym->sub);
+    }
+  
   return resp;
   //return "\0";
 }
 
 
-//TODO Remove
-static roman_table rt[]={{"M",1000},{"CM",900},{"D",500},{"CD",400},{"C",100},{"XC",90},{"L",50},{"XL",40},{"X",10},{"IX",9},{"V",5},{"IV",4},{"I",1}};
-
-char* convert_to_roman(int val)
-{
-  int i;
-  for (i=0; i < NKEYS; i++)
-    {
-      roman_table *sym = &rt[i];
-      if (val == sym->val)
-	{
-	  return sym->key;
-	}
-    }
-  return "\0";
-
-}
