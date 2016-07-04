@@ -1,0 +1,5 @@
+Running suite(s): Romancalc
+66%: Checks: 6, Failures: 1, Errors: 1
+check_romancalc.c:18:E:Additional:test_romancalc_compare:0: (after this point) Received signal 11 (Segmentation fault: 11)
+check_romancalc.c:34:F:Additional:test_add:0: Assertion 'add("IV","X") == "XIIII"' failed: add("IV","X") == "IIIIX", "XIIII" == "XIIII"
+FAIL check_romancalc (exit status: 1)
