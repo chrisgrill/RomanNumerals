@@ -1,7 +1,7 @@
 #include <string.h>
 #include "str_replace.h"
 
-//I put this in its own file because I pulled it form the web and made on small mod to return
+//I put this in its own file because I pulled it form the web and made onw small mod to return
 //the original string if there wasnothing to replace
 char *str_replace(char *orig, char *rep, char *with) {
   char *result; // the return string
