@@ -153,19 +153,13 @@ char* subtract(char *rom1, char *rom2)
 	{
 	  if (resp[i] == tmp[j])
 	    {
-	      remove_char(resp, resp[i]);
-	      remove_char(tmp, resp[i]);
+	      memmove(&resp[i], &resp[i + 1], strlen(resp) - i);
+	      memmove(&tmp[j], &tmp[j + 1], strlen(tmp) - j);
 	    }
 	}
     }
+  free(tmp);
   return resp;
 }
 
-void remove_char(char *str, char remove) {
-  char *src, *dst;
-  for (src = dst = str; *src != '\0'; src++) {
-    *dst = *src;
-    if (*dst != remove) dst++;
-  }
-  *dst = '\0';
-}
+

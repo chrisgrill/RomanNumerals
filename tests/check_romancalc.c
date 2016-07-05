@@ -39,17 +39,12 @@ START_TEST (test_str_replace)
 }
 END_TEST
 
-START_TEST (test_remove_character)
-{
-  ck_assert_str_eq(remove_character("VI","I"),"V");
 
-}
-END_TEST
 
 START_TEST (test_subtract)
 {
-  ck_assert_str_eq(subtract("IV","II"),"III");
-
+  ck_assert_str_eq(subtract("IV","I"),"III");
+  ck_assert_str_eq(subtract("CXCII","LXIX"),"CXXIII");
 }
 END_TEST
 
@@ -66,7 +61,7 @@ Suite * romancalc_suite(void)
     tcase_add_test(tc_additional, test_romancalc_compare);
     tcase_add_test(tc_additional, test_add);
     tcase_add_test(tc_additional, test_str_replace);
-    tcase_add_test(tc_additional, subtract);
+    tcase_add_test(tc_additional, test_subtract);
     suite_add_tcase(s, tc_core);
     suite_add_tcase(s, tc_additional);
     
