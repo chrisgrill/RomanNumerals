@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "romancalc.h"
+#include "str_replace.h"
 
 //Lookup table of roman numeral and integer values
 typedef struct {char key; int val;} digits;
@@ -19,51 +20,7 @@ static sum_map sm[]={{"IIIII","V"},{"VV","X"},{"XXXX","L"},{"LL","C"},{"CCCCC","
 #define MKEYS (sizeof(stam)/sizeof(sub_to_add_map))
 #define SKEYS (sizeof(sm)/sizeof(sum_map))
 
-//TODO Move this to another file. I did not write this function.
-//It is a common enough process to pull form internet. Could probably be optimized
-char *str_replace(char *orig, char *rep, char *with) {
-  char *result; // the return string
-  char *ins;    // the next insert point
-  char *tmp;    // varies
-  int len_rep;  // length of rep
-  int len_with; // length of with
-  int len_front; // distance between rep and end of last rep
-  int count;    // number of replacements
 
-  if (!orig)
-    return NULL;
-  if (!rep)
-    rep = "";
-  len_rep = strlen(rep);
-  if (!with)
-    with = "";
-  len_with = strlen(with);
-
-  ins = orig;
-  for (count = 0; tmp = strstr(ins, rep); ++count) {
-    ins = tmp + len_rep;
-  }
-
-  // first time through the loop, all the variable are set correctly
-  // from here on,
-  //    tmp points to the end of the result string
-  //    ins points to the next occurrence of rep in orig
-  //    orig points to the remainder of orig after "end of rep"
-  tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
-
-  if (!result)
-    return orig;
-
-  while (count--) {
-    ins = strstr(orig, rep);
-    len_front = ins - orig;
-    tmp = strncpy(tmp, orig, len_front) + len_front;
-    tmp = strcpy(tmp, with) + len_with;
-    orig += len_front + len_rep; // move to next "end of rep"
-  }
-  strcpy(tmp, orig);
-  return result;
-}
 
 //Return the integer value of a fundamental roman numeral
 //This is used for comparing the values a numeral represents
@@ -100,12 +57,12 @@ char* expand(char *roman)
   int i;
   char *resp;
   resp = malloc(255 * sizeof(roman));
-  strcpy(resp,roman);
+  strcpy(resp, roman);
 
   for (i = MKEYS-1; i >= 0; i--)
     {
       sub_to_add_map *sym = &stam[i];      
-      resp = str_replace(resp,sym->sub,sym->add);
+      resp = str_replace(resp, sym->sub, sym->add);
     }
   return resp;
 }
@@ -121,23 +78,23 @@ char* add(char *rom1, char *rom2)
   resp2 = expand(rom2);
   strcat(resp, resp2);
   free(resp2);
-  qsort(resp,strlen(resp),1,compare);
+  qsort(resp, strlen(resp), 1, compare);
   for (i = 0; i < SKEYS; i++)
     {
       sum_map *sym = &sm[i];
-      resp = str_replace(resp,sym->bad,sym->good);
+      resp = str_replace(resp, sym->bad, sym->good);
 
     }
   for (i = 0; i < MKEYS; i++)
     {
       sub_to_add_map *sym = &stam[i];
-      resp = str_replace(resp,sym->add,sym->sub);
+      resp = str_replace(resp, sym->add, sym->sub);
     }
   
   return resp;
 }
 
-
+//Subtract rom2 from rom1
 char* subtract(char *rom1, char *rom2)
 {
   int i;
@@ -153,6 +110,7 @@ char* subtract(char *rom1, char *rom2)
 	{
 	  if (resp[i] == tmp[j])
 	    {
+	      //Remove the matching character from both strings
 	      memmove(&resp[i], &resp[i + 1], strlen(resp) - i);
 	      memmove(&tmp[j], &tmp[j + 1], strlen(tmp) - j);
 	    }
