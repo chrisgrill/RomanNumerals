@@ -1,7 +1,0 @@
-Running suite Romancalc
-check_romancalc.c:7:P:Core:test_convert_from_roman:0: Passed
-check_romancalc.c:19:P:Additional:test_romancalc_compare:0: Passed
-check_romancalc.c:28:P:Additional:test_add:0: Passed
-check_romancalc.c:38:P:Additional:test_str_replace:0: Passed
-Results for all suites run:
-100%: Checks: 4, Failures: 0, Errors: 0
