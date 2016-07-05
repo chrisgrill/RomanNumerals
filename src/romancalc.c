@@ -70,23 +70,28 @@ char* expand(char *roman)
 }
 
 //Add two roman numeral numbers
+//Express in additive form, concatenate, sort characters by value, combine, express in subtractive form
 char* add(char *rom1, char *rom2)
 {
   int i;
   char *resp;
   char *resp2;
-
+  //Express in additive form
   resp = expand(rom1);
   resp2 = expand(rom2);
+  //Concatenate
   strcat(resp, resp2);
   free(resp2);
+  //Sort by vaule descending
   qsort(resp, strlen(resp), 1, compare);
+  //Combine based on repeating character rules
   for (i = 0; i < SKEYS; i++)
     {
       sum_map *sym = &sm[i];
       resp = str_replace(resp, sym->bad, sym->good);
 
     }
+  //Express in subtractive form
   for (i = 0; i < MKEYS; i++)
     {
       sub_to_add_map *sym = &stam[i];
@@ -97,15 +102,17 @@ char* add(char *rom1, char *rom2)
 }
 
 //Subtract rom2 from rom1
+//Express in subtractive form, remove like characters
+//TODO: If anything remains in rom2, expand the next largest numeral and repeat
 char* subtract(char *rom1, char *rom2)
 {
   int i;
   char *resp;
   char *tmp;
-
+  //Express in subtractive form
   resp = expand(rom1);
   tmp = expand(rom2);
-  
+  //Remove like characters
   for (i = 0; i < strlen(resp); i++)
     {
       for (int j = 0; j < strlen(tmp); j++)
