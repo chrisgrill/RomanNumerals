@@ -52,6 +52,8 @@ int compare(const void * rom1, const void * rom2)
 
 }
 
+//Convert subtractive representations (i.e IV) to additive representations (i.e IIII)
+//TODO: Optimize this by determining how much memory I should actually be allocating
 char* expand(char *roman)
 {
   int i;
